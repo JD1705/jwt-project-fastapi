@@ -20,7 +20,7 @@ class UserResponse(BaseModel):
     created_at: datetime
 
 class UserDB(BaseModel):
-    id: str
+    _id: str
     username: str
     email: EmailStr
     hashed_password: str
