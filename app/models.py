@@ -25,3 +25,4 @@ class UserDB(BaseModel):
     email: EmailStr
     hashed_password: str
     created_at: datetime
+    role: str = "user"
