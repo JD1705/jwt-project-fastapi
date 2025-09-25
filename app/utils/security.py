@@ -10,4 +10,7 @@ def hash_password(password: str) -> str:
     return hashed_password_str
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    pass
+    plain_password_bytes = plain_password.encode()
+    hashed_password_bytes = hashed_password.encode()
+
+    return bcrypt.checkpw(plain_password_bytes, hashed_password_bytes)
