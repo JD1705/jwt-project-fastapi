@@ -9,7 +9,7 @@ class UserCreate(BaseModel):
 
     @field_validator("confirm_password")
     def validate_passwords(cls, v, values):
-        if "password" in values and v != values["password"]:
+        if "password" in values.data and v != values.data["password"]:
             raise ValueError("Passwords dont match")
         return v
 
