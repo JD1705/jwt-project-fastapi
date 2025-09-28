@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
-from models import UserCreate, UserDB, UserResponse
-from database import get_collection
-from utils.security import hash_password
+from app.models import UserCreate, UserDB, UserResponse
+from app.database import get_collection
+from app.utils.security import hash_password
 from datetime import datetime, timezone
 from bson import ObjectId
 
