@@ -26,3 +26,7 @@ class UserDB(BaseModel):
     hashed_password: str
     created_at: datetime
     role: str = "user"
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: SecretStr
