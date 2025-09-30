@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
-from app.models import UserCreate, UserDB, UserResponse
+from app.models import UserCreate, UserDB, UserLogin, UserResponse
 from app.database import get_collection
-from app.utils.security import hash_password
+from app.utils.security import hash_password, verify_password
 from datetime import datetime, timezone
 from bson import ObjectId
 
@@ -38,3 +38,25 @@ def register_user(user_data: UserCreate):
                 email=user_data.email,
                 created_at=datetime.now(timezone.utc)
                 )
+
+@router.post("/login", status_code=status.HTTP_200_OK)
+def login_user(user_data: UserLogin):
+    collection = get_collection("users")
+    existing_user = collection.find_one({"email":user_data.email})
+
+    if not existing_user:
+        raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect Credentials"
+                )
+    else:
+        verify = verify_password(user_data.password.get_secret_value(), existing_user["hashed_password"])
+        if verify:
+            return {
+                    "detail":"Login Successful"
+                    }
+        else:
+            raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect Credentials"
+                    )
