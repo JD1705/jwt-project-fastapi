@@ -42,8 +42,9 @@ def register_user(user_data: UserCreate):
 @router.post("/login", status_code=status.HTTP_200_OK)
 def login_user(user_data: UserLogin):
     collection = get_collection("users")
-    existing_user = collection.find_one({"email":user_data.email})
+    normalized_email = user_data.email.lower().strip()
 
+    existing_user = collection.find_one({"email":normalized_email})
     if not existing_user:
         raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
