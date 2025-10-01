@@ -8,6 +8,8 @@ from fastapi.testclient import TestClient
 from bson import ObjectId
 from datetime import datetime, timezone
 
+client = TestClient(app)
+
 def test_successful_registration(mocker):
 
     mock_get_collection = mocker.patch("app.routes.auth.get_collection")
@@ -28,7 +30,6 @@ def test_successful_registration(mocker):
     mock_hash = mocker.patch("app.routes.auth.hash_password")
     mock_hash.return_value = "hashed_password_123"
 
-    client = TestClient(app)
     response = client.post("/auth/register", json={
         "email":"testemail@example.com",
         "username":"test_user",
@@ -56,8 +57,6 @@ def test_if_user_already_exists(mocker):
 
     mocker.patch("app.routes.auth.get_collection", return_value=mock_get_collection)
 
-    client = TestClient(app)
-
     user_data = {
         "email":"testemail@example.com",
         "username":"test_user",
@@ -71,3 +70,80 @@ def test_if_user_already_exists(mocker):
     assert response.json()["detail"] == "User already exist"
 
     assert not mock_get_collection.insert_one.called
+
+# Login tests
+def test_login_success(mocker):
+    
+    mock_get_collection = mocker.MagicMock()
+    mock_user = {
+        "_id": "user123",
+        "email": "test@example.com",
+        "hashed_password": "hashed_password_123"
+    }
+    mock_get_collection.find_one.return_value = mock_user
+
+    mock_verify_password = mocker.MagicMock(return_value=True)
+
+    mocker.patch("app.routes.auth.get_collection", return_value=mock_get_collection)
+    mocker.patch("app.routes.auth.verify_password", mock_verify_password)
+
+    login_data = {
+        "email": "test@example.com",
+        "password": "correctpassword123"
+    }
+
+    response = client.post("/auth/login", json=login_data)
+
+    assert response.status_code == 200
+    assert response.json()["detail"] == "Login Successful"
+
+    mock_get_collection.find_one.assert_called_once_with({"email":"test@example.com"})
+
+    mock_verify_password.assert_called_once_with("correctpassword123", "hashed_password_123")
+
+def test_login_user_not_found(mocker):
+    
+    mock_get_collection = mocker.MagicMock()
+    mock_get_collection.find_one.return_value = None
+
+    mocker.patch("app.routes.auth.get_collection", return_value=mock_get_collection)
+
+    login_data = {
+        "email": "nonexistent@example.com",
+        "password": "somepassword123"
+    }
+
+    response = client.post("/auth/login", json=login_data)
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Incorrect Credentials"
+
+    mock_get_collection.find_one.assert_called_once_with({"email":"nonexistent@example.com"})
+
+def test_login_with_wrong_password(mocker):
+
+    mock_get_collection = mocker.MagicMock()
+    user_data = {
+        "_id": "user123", 
+        "email": "test@example.com",
+        "hashed_password": "hashed_password_123"
+    }
+    
+    mock_get_collection.find_one.return_value = user_data
+
+    mock_verify_password = mocker.MagicMock(return_value=False)
+
+    mocker.patch("app.routes.auth.get_collection", return_value=mock_get_collection)
+    mocker.patch("app.routes.auth.verify_password", mock_verify_password)
+
+    login_data = {
+            "email":"test@example.com",
+            "password":"wrongpassword"
+            }
+
+    response = client.post("/auth/login", json=login_data)
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Incorrect Credentials"
+
+    mock_verify_password.assert_called_once_with("wrongpassword", "hashed_password_123")
