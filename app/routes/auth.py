@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from app.models import UserCreate, UserDB, UserLogin, UserResponse
 from app.database import get_collection
-from app.utils.security import hash_password, verify_password
+from app.utils.security import create_access_token, hash_password, verify_password
 from datetime import datetime, timezone
 from bson import ObjectId
 
@@ -53,8 +53,11 @@ def login_user(user_data: UserLogin):
     else:
         verify = verify_password(user_data.password.get_secret_value(), existing_user["hashed_password"])
         if verify:
+            access_token = create_access_token(data={"sub":str(existing_user["_id"]), "email": existing_user["email"]})
+
             return {
-                    "detail":"Login Successful"
+                    "access_token": access_token,
+                    "token_type": "bearer"
                     }
         else:
             raise HTTPException(
