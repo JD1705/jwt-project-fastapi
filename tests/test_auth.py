@@ -83,10 +83,15 @@ def test_login_success(mocker):
     mock_get_collection.find_one.return_value = mock_user
 
     mock_verify_password = mocker.MagicMock(return_value=True)
+    
+    mock_create_access_token = mocker.MagicMock()
+    mock_token = "falsetoken"
+    mock_create_access_token.return_value = mock_token
 
     mocker.patch("app.routes.auth.get_collection", return_value=mock_get_collection)
     mocker.patch("app.routes.auth.verify_password", mock_verify_password)
-
+    mocker.patch("app.routes.auth.create_access_token", mock_create_access_token)
+    
     login_data = {
         "email": "test@example.com",
         "password": "correctpassword123"
@@ -95,10 +100,11 @@ def test_login_success(mocker):
     response = client.post("/auth/login", json=login_data)
 
     assert response.status_code == 200
-    assert response.json()["detail"] == "Login Successful"
+    assert response.json()["access_token"] == mock_token
+    assert response.json()["token_type"] == "bearer"
 
     mock_get_collection.find_one.assert_called_once_with({"email":"test@example.com"})
-
+    mock_create_access_token.assert_called_once_with({"sub":mock_user["_id"], "email":mock_user["email"]})
     mock_verify_password.assert_called_once_with("correctpassword123", "hashed_password_123")
 
 def test_login_user_not_found(mocker):
