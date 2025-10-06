@@ -53,7 +53,12 @@ def login_user(user_data: UserLogin):
     else:
         verify = verify_password(user_data.password.get_secret_value(), existing_user["hashed_password"])
         if verify:
-            access_token = create_access_token(data={"sub":str(existing_user["_id"]), "email": existing_user["email"]})
+            access_token = create_access_token(
+                    {
+                        "sub":str(existing_user["_id"]),
+                        "email": existing_user["email"]
+                        }
+                    )
 
             return {
                     "access_token": access_token,
