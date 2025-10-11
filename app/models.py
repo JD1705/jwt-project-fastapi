@@ -1,4 +1,5 @@
-from pydantic import BaseModel, field_validator, EmailStr, SecretStr
+from pydantic import BaseModel, field_validator, EmailStr, SecretStr, model_validator
+from typing import Optional
 from datetime import datetime
 
 class UserCreate(BaseModel):
@@ -30,3 +31,13 @@ class UserDB(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: SecretStr
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+    @model_validator(mode="after")
+    def validate_fields(self):
+        if self.username is None and self.email is None:
+            raise ValueError("at least one field should be passed")
+        return self
