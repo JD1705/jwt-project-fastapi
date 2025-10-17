@@ -1,3 +1,8 @@
+"""
+module: database.py
+purpose: store database configuration and connections
+"""
+
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os

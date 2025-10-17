@@ -1,3 +1,8 @@
+"""
+module: dependencies.py
+purpose: utility functions needed for endpoints
+"""
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.utils.security import verify_token

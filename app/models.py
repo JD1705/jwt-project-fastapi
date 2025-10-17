@@ -1,3 +1,8 @@
+"""
+module: models.py
+purpose: pydantic validation schemas
+"""
+
 from pydantic import BaseModel, field_validator, EmailStr, SecretStr, model_validator
 from typing import Optional
 from datetime import datetime

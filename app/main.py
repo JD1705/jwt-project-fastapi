@@ -1,3 +1,8 @@
+"""
+module: main.py
+purpose: contain the main application
+"""
+
 from fastapi import FastAPI
 from app.routes import auth, users
 

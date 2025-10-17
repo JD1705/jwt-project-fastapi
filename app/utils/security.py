@@ -1,4 +1,8 @@
-from logging import raiseExceptions
+"""
+module: security.py
+purpose: store utility functions for authentication and security
+"""
+
 import jwt
 from fastapi import HTTPException, status
 from jwt import ExpiredSignatureError, InvalidTokenError

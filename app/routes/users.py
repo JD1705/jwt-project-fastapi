@@ -1,3 +1,8 @@
+"""
+module: users.py
+purpose: user management endpoints (need authentication)
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.utils.dependencies import get_current_user
 from app.models import UserResponse, UserUpdate

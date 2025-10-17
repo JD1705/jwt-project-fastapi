@@ -1,3 +1,8 @@
+"""
+module: auth.py
+purpose: authentication endpoints
+"""
+
 from fastapi import APIRouter, HTTPException, status
 from app.models import UserCreate, UserDB, UserLogin, UserResponse
 from app.database import get_collection
