@@ -43,6 +43,6 @@ class UserUpdate(BaseModel):
 
     @model_validator(mode="after")
     def validate_fields(self):
-        if self.username is None and self.email is None:
+        if (self.username is None or self.username == "") and (self.email is None or self.email == ""):
             raise ValueError("at least one field should be passed")
         return self
