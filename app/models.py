@@ -39,10 +39,12 @@ class UserLogin(BaseModel):
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
-    email: Optional[EmailStr] = None
-
+    email: Optional[EmailStr] = None # EmailStr validates automatically that the email is not "", that's why we dont have to check it with the validator
+    
+    # we use model_validator because we need to validate multiple fields
     @model_validator(mode="after")
     def validate_fields(self):
-        if (self.username is None or self.username == "") and (self.email is None or self.email == ""):
+        # we use the parenthesis to handle the conditions correctly
+        if (self.username is None or self.username == "") and (self.email is None):
             raise ValueError("at least one field should be passed")
         return self
