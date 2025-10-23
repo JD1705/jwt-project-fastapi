@@ -22,3 +22,22 @@ def test_successful_response(mocker, client, mock_user, mock_verify_token, mock_
     assert data["email"] == mock_user["email"]
     assert data["id"] == mock_user["_id"]
 
+def test_call_without_token(client):
+
+    response = client.get("/users/me")
+
+    assert response.status_code == 403
+
+def test_if_user_not_found(client, mock_token, mock_verify_token, mocker):
+
+    mock_get_collection_dependencies = mocker.MagicMock()
+    mock_get_collection_dependencies.find_one.return_value = None
+
+    mocker.patch("app.utils.dependencies.get_collection", return_value=mock_get_collection_dependencies)
+
+    response = client.get("/users/me", headers={"authorization":f"bearer {mock_token}"})
+
+    assert response.status_code == 404
+    data = response.json()
+    assert data["detail"] == "User Not Found"
+
