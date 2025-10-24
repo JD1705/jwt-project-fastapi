@@ -218,6 +218,6 @@ pytest tests/test_auth.py -v
 - Update documentation after adding features
     
 - Use descriptive commit messages
-## Licencia
+## License
 
-This project is under MIT License - check the file [LICENSE](https://LICENSE) for more details.
+This project is under MIT License - check the file [LICENSE](LICENSE) for more details.
