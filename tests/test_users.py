@@ -212,3 +212,47 @@ def test_that_fields_are_not_empty(client, mocker, mock_user, mock_verify_token,
     mock_get_collection.update_one.assert_not_called()
     mock_get_collection.find_one.assert_not_called()
 
+# tests for DELETE /users/me
+def test_if_delete_user_correctly(client, mock_user, mock_token, mocker, mock_verify_token):
+    
+    mock_get_collection_dependencies = mocker.MagicMock()
+    mock_get_collection_dependencies.find_one.return_value = mock_user
+
+    mock_delete_result = mocker.MagicMock()
+    mock_delete_result.deleted_count = 1
+
+    mock_get_collection = mocker.MagicMock()
+    mock_get_collection.delete_one.return_value = mock_delete_result
+
+
+    mocker.patch("app.routes.users.get_collection", return_value=mock_get_collection)
+    mocker.patch("app.utils.dependencies.get_collection", return_value=mock_get_collection_dependencies)
+    mock_dependency = mocker.patch("app.routes.users.get_current_user")
+    mock_dependency.return_value = mock_user
+
+    response = client.delete("/users/me", headers={"authorization":f"bearer {mock_token}"})
+
+    assert response.status_code == 204
+    mock_get_collection.delete_one.assert_called_once_with({"_id":"user123"})
+
+def test_if_user_not_found_on_delete(client, mock_token, mocker, mock_verify_token, mock_user):
+    
+    mock_get_collection_dependencies = mocker.MagicMock()
+    mock_get_collection_dependencies.find_one.return_value = mock_user
+
+    mock_delete_result = mocker.MagicMock()
+    mock_delete_result.deleted_count = 0
+
+    mock_get_collection = mocker.MagicMock()
+    mock_get_collection.delete_one.return_value = mock_delete_result
+
+
+    mocker.patch("app.routes.users.get_collection", return_value=mock_get_collection)
+    mocker.patch("app.utils.dependencies.get_collection", return_value=mock_get_collection_dependencies)
+    mock_dependency = mocker.patch("app.routes.users.get_current_user")
+    mock_dependency.return_value = mock_user
+
+    response = client.delete("/users/me", headers={"authorization":f"bearer {mock_token}"})
+
+    assert response.status_code == 404
+    mock_get_collection.delete_one.assert_called_once_with({"_id":"user123"})
