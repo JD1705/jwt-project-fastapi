@@ -119,7 +119,7 @@ pytest
 | PUT    | `/users/me`      | Update self user | yes           |
 | DELETE | `/users/me`      | Delete self user | yes           |
 
-**Note**: see on a more detailed endpoints information [here](docs/endpoints.md)
+**Note**: see a more detailed endpoints information [here](docs/endpoints.md)
 
 ### Request Example
 #### User Register
