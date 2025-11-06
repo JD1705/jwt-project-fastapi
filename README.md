@@ -186,6 +186,12 @@ jwt-fastapi-project/
 │   ├── conftest.py
 │   ├── test_auth.py
 │   └── test_users.py
+├── docs/
+│   ├── api-examples/
+│   │   ├── httpie-commands.md
+│   │   └── curl-examples.md
+│   └── endpoints.md
+│
 ├── __init__.py
 ├── .env
 ├── .env_example
