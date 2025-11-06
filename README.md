@@ -164,6 +164,8 @@ Content-Type: application/json
 }
 ```
 
+for full request examples you can check see the [HTTPie](docs/httpie-commands.md) file or the [curl](docs/curl-examples.md) file
+
 ## Project Structure
 
 ```text
